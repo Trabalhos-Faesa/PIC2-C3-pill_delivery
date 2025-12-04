@@ -21,13 +21,13 @@ from django.urls import path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path(
-    #     '',
-    #     lambda req: render(
-    #         req,
-    #         'home/index.html',
-    #         { 'title': "Home" },
-    #     ),
-    #     name='home',
-    # ),
+    path(
+        '',
+        lambda req: render(
+            req,
+            'home/index.html',
+            { 'title': 'Home' },
+        ),
+        name='home',
+    ),
 ]
