@@ -16,7 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.shortcuts import render
-from django.urls import path
+from django.urls import include, path
+
+from cliente.models import Entrega
 
 
 urlpatterns = [
@@ -29,5 +31,9 @@ urlpatterns = [
             { 'title': 'Home' },
         ),
         name='home',
+    ),
+    path(
+        'cliente/',
+        include('cliente.urls', namespace='cliente'),
     ),
 ]
