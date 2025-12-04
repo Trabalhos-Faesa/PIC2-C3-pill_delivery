@@ -28,6 +28,10 @@ indent_style = tab
 indent_size = 2
 tab_width = 2
 
+[*.html]
+indent_size = 2
+tab_width = 2
+
 [docker-compose.{yml,yaml}]
 indent_size = 2
 tab_width = 2
