@@ -22,10 +22,10 @@ dependencies = [
     # --- Observability ---
     "opentelemetry-exporter-otlp ~= 1.37",  # opentelemetry-exporter-otlp-proto-http
     "opentelemetry-instrumentation-system-metrics ~= 0.58b0",
-    # "opentelemetry-instrumentation-logging ~= 0.58b0",
-    # "opentelemetry-instrumentation-threading ~= 0.58b0",
-    "opentelemetry-instrumentation-dbapi ~= 0.58b0",
-    "opentelemetry-instrumentation-sqlalchemy ~= 0.58b0",
+    # # "opentelemetry-instrumentation-logging ~= 0.58b0",
+    # # "opentelemetry-instrumentation-threading ~= 0.58b0",
+    # "opentelemetry-instrumentation-dbapi ~= 0.58b0",
+    # "opentelemetry-instrumentation-sqlalchemy ~= 0.58b0",
     "opentelemetry-instrumentation-redis ~= 0.58b0",
     "logfmter ~= 0.0.10",
     # "requests ~= 2.32",  # TODO: dev only?
