@@ -40,9 +40,8 @@ services:
     container_name: redis
     ports: ["6379:6379"]
     restart: on-failure:3
-    env_file:
-      - path: ./redis.env
-        required: false
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
     entrypoint: ["sh", "-c", 'redis-server --appendonly yes --requirepass "$${REDIS_PASSWORD}"']
     volumes:
       - redis_data:/data
@@ -51,6 +50,18 @@ services:
       - monitoring
 
   # TODO: postgres_exporter
+  postgres_exporter:
+    image: quay.io/prometheuscommunity/postgres-exporter:v0.18.1
+    container_name: postgres_exporter
+    depends_on: [redis]
+    ports: ["9187:9187"]
+    restart: on-failure:3
+    environment:
+      - DATA_SOURCE_URI="postgres:5432/postgres?sslmode=disable"
+      - DATA_SOURCE_USER=${POSTGRES_USER}
+      - DATA_SOURCE_PASS=${POSTGRES_PASSWORD}
+    networks:
+      - monitoring
 
   redis_exporter:
     image: oliver006/redis_exporter:v1.78.0-alpine
@@ -58,11 +69,9 @@ services:
     depends_on: [redis]
     ports: ["9121:9121"]
     restart: on-failure:3
-    env_file:
-      - path: ./redis.env
-        required: false
     environment:
       - REDIS_ADDR=redis://redis:6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
     networks:
       - monitoring
 
