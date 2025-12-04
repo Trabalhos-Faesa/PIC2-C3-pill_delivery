@@ -95,7 +95,12 @@ class Pedido(models.Model):
     status: models.PositiveSmallIntegerField = models.PositiveSmallIntegerField(choices=Status.choices)
     data: models.DateTimeField = models.DateTimeField(auto_now_add=True)
     cliente: models.ForeignKey = models.ForeignKey(Cliente, on_delete=models.PROTECT)
-    entrega: models.ForeignKey = models.ForeignKey(Entrega, on_delete=models.PROTECT, blank=True, null=True)
+    entrega: models.ForeignKey = models.ForeignKey(
+        Entrega,
+        blank=True, null=True,
+        related_name='pedidos',
+        on_delete=models.PROTECT,
+    )
 
     @property
     def status_label(self):
