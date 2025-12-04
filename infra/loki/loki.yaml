@@ -1,0 +1,75 @@
+# https://grafana.com/docs/loki/latest/configure/examples/configuration-examples/
+# https://github.com/grafana/loki/blob/main/cmd/loki/loki-docker-config.yaml
+# https://github.com/grafana/loki/blob/main/cmd/loki/loki-local-config.yaml
+
+auth_enabled: false
+
+server:
+  http_listen_port: 3100
+  # grpc_listen_port: 9096
+  # log_level: info
+  # grpc_server_max_concurrent_streams: 1000
+
+common:
+  instance_addr: 127.0.0.1
+  path_prefix: /loki
+  replication_factor: 1
+  ring:
+    kvstore:
+      store: inmemory
+  storage:
+    filesystem:
+      chunks_directory: /loki/chunks
+      rules_directory: /loki/rules
+
+schema_config:
+  configs:
+  - from: 2020-05-15
+    store: tsdb
+    object_store: filesystem
+    schema: v13
+    index:
+      prefix: index_
+      period: 24h
+
+query_range:
+  results_cache:
+    cache:
+      embedded_cache:
+        enabled: true
+        max_size_mb: 100
+
+pattern_ingester:
+  enabled: true
+  metric_aggregation:
+    loki_address: localhost:3100
+
+frontend:
+  encoding: protobuf
+
+# https://github.com/grafana/loki/blob/main/production/docker/config/alertmanager.yml
+# https://github.com/grafana/loki/blob/main/production/docker/rules/docker/rules.yml
+# ruler:
+#   # Comma-separated list of Alertmanager URLs to send notifications to
+#   alertmanager_url: http://localhost:9093
+#   # Use DNS SRV records to discover Alertmanager hosts.
+#   # enable_alertmanager_discovery: true
+
+# storage_config:
+#   filesystem:
+#     directory: /loki/chunks
+
+limits_config:
+  # https://grafana.com/docs/loki/latest/send-data/otel/
+  allow_structured_metadata: true
+#   metric_aggregation_enabled: true
+#   enable_multi_variant_queries: true
+
+# # The compactor block configures the compactor component, which compacts index shards for performance.
+# compactor:
+#   working_directory: /loki/compactor
+#   compaction_interval: 5m
+
+# If you would like to disable reporting, uncomment the following lines:
+#analytics:
+#  reporting_enabled: false

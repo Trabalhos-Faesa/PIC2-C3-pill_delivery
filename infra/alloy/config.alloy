@@ -1,0 +1,121 @@
+// https://grafana.com/docs/alloy/latest/get-started/configuration-syntax/
+// logging {
+//   level  = "info"
+//   format = "logfmt"
+// }
+
+livedebugging {
+  enabled = true
+}
+
+
+// https://grafana.com/docs/alloy/latest/collect/choose-component/
+// https://grafana.com/docs/alloy/latest/reference/components/
+// https://grafana.com/docs/alloy/latest/reference/compatibility/
+
+// MARK: Tempo
+// OTLP gRPC
+otelcol.exporter.otlp "tempo" {
+  client {
+    endpoint = "tempo:4317"
+    tls {
+      insecure = true
+      // insecure_skip_verify = true
+    }
+  }
+}
+
+// MARK: Prometheus
+// prometheus.remote_write "prometheus" {
+//     endpoint {
+//         url = "http://prometheus:9090/api/v1/write"
+//     }
+// }
+// otelcol.exporter.prometheus "prometheus" {
+// 	forward_to = [prometheus.remote_write.prometheus.receiver]
+// }
+// https://prometheus.io/docs/guides/opentelemetry/#send-opentelemetry-metrics-to-the-prometheus-server
+// OTLP HTTP
+otelcol.exporter.otlphttp "prometheus" {
+  client {
+    endpoint = "http://prometheus:9090/api/v1/otlp"
+  }
+}
+
+// MARK: Loki
+loki.write "loki" {
+	endpoint {
+		url = "http://loki:3100/loki/api/v1/push"
+		// tenant_id = "tenant1"
+	}
+	// external_labels = {}
+}
+// https://grafana.com/docs/grafana-cloud/send-data/otlp/adopt-new-logs-format/
+// OTLP HTTP
+otelcol.exporter.otlphttp "loki" {
+  client {
+    endpoint = "http://loki:3100/otlp"
+  }
+}
+
+// MARK: OpenTelemetry OTLP receiver, processor and exporter
+// https://grafana.com/docs/alloy/latest/collect/opentelemetry-data/
+// https://grafana.com/docs/alloy/latest/collect/opentelemetry-to-lgtm-stack/
+otelcol.receiver.otlp "default" {
+  grpc {  // configures the default grpc endpoint "0.0.0.0:4317"
+    // endpoint = "alloy:4317"
+  }
+
+  http {  // configures the default http/protobuf endpoint "0.0.0.0:4318"
+    // endpoint = "alloy:4318"
+  }
+
+//   output {
+//     traces  = [otelcol.processor.batch.default.input]
+//     metrics = [otelcol.processor.batch.default.input]
+//     logs    = [otelcol.processor.batch.default.input]
+//   }
+  output {
+    traces  = [otelcol.exporter.otlp.tempo.input]
+    metrics = [otelcol.exporter.otlphttp.prometheus.input]
+    logs    = [otelcol.exporter.otlphttp.loki.input]
+  }
+}
+
+
+// MARK: Batch processor
+// https://grafana.com/docs/alloy/latest/reference/components/otelcol/otelcol.processor.batch/
+// otelcol.processor.batch "default" {
+//   output {
+//     traces  = [otelcol.exporter.otlp.tempo.input]
+//     metrics = [otelcol.exporter.otlphttp.prometheus.input]
+//     logs    = [otelcol.exporter.otlphttp.loki.input]
+//   }
+// }
+
+
+// MARK: Docker containers logs scraping
+// https://raw.githubusercontent.com/grafana/loki/main/examples/getting-started/alloy-local-config.yaml
+// https://grafana.com/docs/alloy/latest/monitor/monitor-docker-containers/
+discovery.docker "flog_scrape" {
+	host             = "unix:///var/run/docker.sock"
+	refresh_interval = "5s"
+}
+
+discovery.relabel "flog_scrape" {
+	targets = []
+
+	rule {
+		source_labels = ["__meta_docker_container_name"]
+		regex         = "/(.*)"
+		target_label  = "container"
+	}
+}
+
+loki.source.docker "flog_scrape" {
+	host             = "unix:///var/run/docker.sock"
+	targets          = discovery.docker.flog_scrape.targets
+	forward_to       = [loki.write.loki.receiver]
+	relabel_rules    = discovery.relabel.flog_scrape.rules
+	refresh_interval = "5s"
+}

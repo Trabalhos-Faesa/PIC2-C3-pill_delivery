@@ -1,0 +1,13 @@
+apiVersion: 1
+
+providers:
+  - name: Default
+    type: file
+    updateIntervalSeconds: 60
+    disableDeletion: false
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards/
+      foldersFromFilesStructure: true
+
+# FIXME: values for data sources

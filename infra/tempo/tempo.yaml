@@ -1,0 +1,92 @@
+# https://grafana.com/docs/tempo/latest/configuration/
+# [Local storage](https://github.com/grafana/tempo/tree/main/example/docker-compose/local)
+# https://grafana.com/docs/tempo/latest/setup/linux/
+
+stream_over_http_enabled: true  # Enables result streaming from Tempo (to Grafana) via HTTP.
+
+server:
+  http_listen_port: 3200
+  log_level: info
+
+distributor:
+  usage:
+    cost_attribution:
+      enabled: true
+  receivers:                         # this configuration will listen on all ports and protocols that tempo is capable of.
+    # jaeger:                        # the receives all come from the OpenTelemetry collector.  more configuration information can
+    #   protocols:                   # be found there: https://github.com/open-telemetry/opentelemetry-collector/tree/main/receiver
+    #     thrift_http:               #
+    #       endpoint: "0.0.0.0:14268"  # for a production deployment you should only enable the receivers you need!
+    #     grpc:
+    #       endpoint: "0.0.0.0:14250"
+    #     thrift_binary:
+    #       endpoint: "0.0.0.0:6832"
+    #     thrift_compact:
+    #       endpoint: "0.0.0.0:6831"
+    # zipkin:
+    #   endpoint: "0.0.0.0:9411"
+    otlp:
+      protocols:
+        grpc:
+          endpoint: "0.0.0.0:4317"
+        http:
+          endpoint: "0.0.0.0:4318"
+    # opencensus:
+    #   endpoint: "0.0.0.0:55678"
+
+# ingester:
+#   # maximum length of time before cutting a block
+#   max_block_duration: 5m  # Default: 30m
+
+# compactor:
+#   compaction:
+#     block_retention: 48h  # Duration to keep blocks. Default is 14 days (336h).
+
+storage:
+  trace:
+    backend: local  # backend configuration to use.
+    wal:
+      path: /var/tempo/wal  # where to store the WAL (Write Ahead Log) locally.
+    local:
+      path: /var/tempo/blocks
+
+metrics_generator:
+  # ring:
+  #   kvstore:
+  #     store: inmemory
+  registry:
+    external_labels:
+      source: tempo
+      cluster: docker-compose
+  storage:  # Storage and remote write configuration
+    path: /var/tempo/generator/wal  # Path to store the WAL. Each tenant will be stored in its own subdirectory.
+    # https://prometheus.io/docs/prometheus/latest/configuration/configuration/#remote_write
+    remote_write:  # A list of remote write endpoints.
+      # - url: http://prometheus:9090/api/v1/write
+      - url: http://${PROMETHEUS_HOST:-prometheus}:${PROMETHEUS_PORT:-9090}/api/v1/write
+        send_exemplars: true
+  traces_storage:  # Configuration block for the WAL (Write Ahead Log).
+    path: /var/tempo/generator/traces
+  processor:
+    local_blocks:
+      # Whether server spans should be filtered in or not.
+      # If enabled, only parent spans or spans with the SpanKind of `server` will be retained
+      filter_server_spans: false
+      # Whether server spans should be flushed to storage.
+      # Setting `flush_to_storage` to `true` ensures that metrics blocks are flushed to storage so TraceQL metrics queries against historical data.
+      flush_to_storage: true
+    service_graphs:
+      enable_virtual_node_label: true
+    span_metrics:
+      enable_target_info: true
+
+overrides:
+  defaults:
+    cost_attribution:
+      dimensions:
+        service.name: ""
+    metrics_generator:
+      processors: [service-graphs, span-metrics, local-blocks]  # Enables metrics generator.
+      generate_native_histograms: both  # Configures the histogram implementation to use for span metrics and service graphs processors.
+
+# FIXME: service-graphs not working

@@ -3,20 +3,20 @@
 # $ docker compose --env-file ./.env up -d postgres
 
 services:
-  app:
-    build: .
-    container_name: app
-    depends_on: [postgres, redis]
-    ports: ["8000:8000"]
-    volumes:
-      - ./src:/app/src
-      - ./logs:/app/logs
-    networks:
-      - app
-      - monitoring
-    env_file:
-      - path: ./.env
-        required: false
+  # app:
+  #   build: .
+  #   container_name: app
+  #   depends_on: [postgres, redis]
+  #   ports: ["8000:8000"]
+  #   volumes:
+  #     - ./src:/app/src
+  #     - ./logs:/app/logs
+  #   networks:
+  #     - app
+  #     - monitoring
+  #   env_file:
+  #     - path: ./.env
+  #       required: false
 
   postgres:
     image: postgres:17-alpine
@@ -66,15 +66,15 @@ services:
     networks:
       - monitoring
 
-  nginx:
-    image: nginx:stable
-    container_name: nginx
-    depends_on: [app]
-    ports: ["8080:80"]
-    networks:
-      - app
-    volumes:
-      - "./infra/nginx/nginx.conf:/etc/nginx/conf.d/default.conf"
+  # nginx:
+  #   image: nginx:stable
+  #   container_name: nginx
+  #   depends_on: [app]
+  #   ports: ["8080:80"]
+  #   networks:
+  #     - app
+  #   volumes:
+  #     - "./infra/nginx/nginx.conf:/etc/nginx/conf.d/default.conf"
 
   tempo:
     image: grafana/tempo:2.8.2
