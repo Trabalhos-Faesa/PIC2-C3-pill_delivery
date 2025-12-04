@@ -1,12 +1,15 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div class="container mt-5">
-      <div class="row justify-content-center">
-        <div class="col-md-8 text-center">
-          <h1 class="display-4 text-primary">Página não disponível!</h1>
-          <p class="lead">No momento apenas o painel administrativo está operante, aguarde o lançamento.</p>
-        </div>
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-8 text-center">
+        <h1 class="display-4 text-primary mb-2">Página indisponível!</h1>
+        <p class="lead">No momento apenas o painel administrativo está operante, aguarde o lançamento.</p>
+        <a href="{% url 'admin:index' %}"><button type="button" class="btn btn-success btn-lg mt-4">
+          Painel Administrativo
+        </button></a>
       </div>
     </div>
+  </div>
 {% endblock %}
