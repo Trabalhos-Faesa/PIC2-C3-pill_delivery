@@ -1,24 +1,24 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <div class="container mt-5">
-    <div class="row justify-content-center">
-      <div class="col-md-8 text-center">
-        <h1 class="display-4 text-primary mb-2">Bem Vindo!</h1>
-        <p class="lead">No momento apenas o painel administrativo está operante. Aguarde o lançamento.</p>
-        <a href="{% url 'admin:index' %}"><button type="button" class="btn btn-success btn-lg mt-4">
-          Painel Administrativo
-        </button></a>
-      </div>
-      {% comment %} {%for entrega in entregas %}
-      <div>
-        <span>Entrega: {{ entrega }}</span>
-      </div>
-      {% empty %}
-      <div>
-        <p>Nenhuma entrega ocorrendo no momento</p>
-      </div>
-      {% endfor %} {% endcomment %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 text-center">
+    <h1 class="display-4 text-primary mb-2">Bem Vindo!</h1>
+    <p class="lead">No momento apenas o painel administrativo está operante. Aguarde o lançamento.</p>
+    <a href="{% url 'admin:index' %}"><button type="button" class="btn btn-success btn-lg mt-4">
+        Painel Administrativo
+    </button></a>
     </div>
   </div>
+</div>
+
+
+
+<a href="{% url 'cliente:raw-list-entregas' %}">
+  <button class="btn btn-primary rounded-circle shadow position-fixed bottom-0 end-0 m-4">
+      <i class="bi bi-arrow-up-right"></i>
+  </button>
+</a>
+
 {% endblock %}

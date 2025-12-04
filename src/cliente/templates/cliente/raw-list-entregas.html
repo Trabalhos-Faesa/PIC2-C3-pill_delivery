@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+  {%for entrega in entregas %}
+    <div>
+      <span>Entrega: {{ entrega }}</span>
+        {% for pedido in entrega.pedidos.all %}
+          <div class='ms-4'><span>Pedido: {{ pedido }}</span></div>
+        {% endfor %}
+    </div>
+    {% empty %}
+    <div>
+      <p>Nenhuma entrega ocorrendo no momento</p>
+    </div>
+  {% endfor %}
+{% endblock %}
