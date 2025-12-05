@@ -157,7 +157,7 @@ if DEBUG and 'INTERNAL_IPS' not in locals():
 #     INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1", "10.0.2.2"]
 
 DEBUG_TOOLBAR_CONFIG = {
-    # 'SHOW_TOOLBAR_CALLBACK': lambda r: DEBUG,  # Enables it
-    'SHOW_TOOLBAR_CALLBACK': lambda r: False,  # Disables it
+    'SHOW_TOOLBAR_CALLBACK': lambda r: DEBUG,  # Enables it
+    # 'SHOW_TOOLBAR_CALLBACK': lambda r: False,  # Disables it
     'IS_RUNNING_TESTS': False,
 }
